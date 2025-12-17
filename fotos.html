@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fotos | Ana & Yoseba</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 30px; }
+    .gallery-img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; cursor: zoom-in; transition: transform 0.3s ease; }
+    .gallery-img:hover { transform: scale(1.02); }
+    #preview-container { display: none; margin-bottom: 20px; }
+    #preview-img { max-height: 200px; border-radius: 10px; }
+    
+    /* Estilos para las opciones de foto */
+    .photo-wrapper { position: relative; overflow: hidden; border-radius: 8px; }
+    .photo-options { 
+      position: absolute; top: 5px; right: 8px; color: white; 
+      background: rgba(0,0,0,0.5); border-radius: 50%; width: 26px; 
+      height: 26px; display: flex; align-items: center; justify-content: center; 
+      cursor: pointer; font-weight: bold; z-index: 10; 
+    }
+    .download-link { 
+      position: absolute; top: 35px; right: 5px; font-size: 0.75rem; 
+      z-index: 20; padding: 4px 8px; display: none; 
+    }
+  </style>
+</head>
+<body>
+
+<nav class="centered-nav fixed-top">
+  <div class="container text-center">
+    <a class="nav-brand-title d-block" href="index.html">Ana & Yoseba</a>
+    <ul class="nav-links list-unstyled d-flex justify-content-center border-top">
+      <li class="nav-item"><a class="nav-link nav-box" href="index.html">¡Bienvenidos!</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="itinerario.html">El Gran Día</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="confirmacion.html">Confirmación</a></li>
+      <li class="nav-item"><a class="nav-link nav-box active" href="fotos.html">Álmbum</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-5 pt-5 text-center">
+  <h1 class="mb-4">Álbum de Recuerdos</h1>
+  
+  <div class="itinerary-text-box mb-4">
+    <p>¡Ayúdanos a capturar cada momento! Sube tus fotos aquí para que todos podamos disfrutar del día.</p>
+  </div>
+
+  <div id="upload-section" class="mx-auto bg-white p-4 shadow-sm rounded" style="max-width: 500px;">
+    <div id="preview-container">
+      <img id="preview-img" src="" alt="Vista previa">
+    </div>
+    <input type="file" id="fileInput" class="form-control mb-3" accept="image/*">
+    <button id="uploadBtn" class="btn btn-primary w-100">Subir foto al álbum</button>
+  </div>
+
+  <hr class="my-5">
+
+  <h3 class="mb-4">Galería en tiempo real</h3>
+  <div id="gallery" class="gallery-container mb-5">
+    <p class="text-muted w-100">Cargando fotos...</p>
+  </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center p-0">
+        <img id="modalImg" src="" class="img-fluid rounded shadow-lg">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx9u9StmuEwsor0tZefxwZZ0BHWbHL-5Z_w_38pOQT6f51dqhVkh3DZShnRyPIaw50N/exec';
+
+  const gallery = document.getElementById('gallery');
+  const fileInput = document.getElementById('fileInput');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const previewContainer = document.getElementById('preview-container');
+  const previewImg = document.getElementById('preview-img');
+
+  const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+  const modalImg = document.getElementById('modalImg');
+
+  // =====================
+  // PREVISUALIZACIÓN
+  // =====================
+  let previewURL = null;
+
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  // Liberar preview anterior
+  if (previewURL) {
+    URL.revokeObjectURL(previewURL);
+  }
+
+  previewURL = URL.createObjectURL(file);
+  previewImg.src = previewURL;
+  previewContainer.style.display = 'block';
+});
+
+
+  // =====================
+  // FUNCIÓN OPTIMIZACIÓN
+  // =====================
+  function resizeImage(file, maxSize = 2000, quality = 0.85) {
+    return new Promise(resolve => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = e => img.src = e.target.result;
+      reader.readAsDataURL(file);
+
+      img.onload = () => {
+        let { width, height } = img;
+
+        if (width > height && width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          blob => resolve(blob),
+          'image/jpeg',
+          quality
+        );
+      };
+    });
+  }
+
+  let openDownloadMenu = null;
+
+  // =====================
+  // CARGAR GALERÍA
+  // =====================
+  fetch(scriptURL)
+    .then(res => res.json())
+    .then(data => {
+      gallery.innerHTML = '';
+
+      if (!Array.isArray(data) || data.length === 0) {
+        gallery.innerHTML = '<p class="text-muted">Aún no hay fotos subidas. ¡Anímate y se el primero!</p>';
+        return;
+      }
+
+      data.forEach(photo => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'photo-wrapper shadow-sm';
+
+        const img = document.createElement('img');
+        img.src = photo.data;
+        img.className = 'gallery-img';
+
+        img.onclick = () => {
+          modalImg.src = photo.data;
+          imageModal.show();
+        };
+
+        const optionsBtn = document.createElement('div');
+        optionsBtn.className = 'photo-options';
+        optionsBtn.textContent = '⋮';
+
+        const downloadBtn = document.createElement('a');
+        downloadBtn.href = photo.data;
+        downloadBtn.download = photo.name || 'foto.jpg';
+        downloadBtn.className = 'download-link btn btn-sm btn-light shadow';
+        downloadBtn.textContent = '📥 Descargar';
+        downloadBtn.style.display = 'none';
+
+        optionsBtn.onclick = e => {
+          e.stopPropagation();
+
+          // Cerrar cualquier otro menú abierto
+         if (openDownloadMenu && openDownloadMenu !== downloadBtn) {
+                  openDownloadMenu.style.display = 'none';
+      }
+
+        // Toggle del actual
+      const isOpen = downloadBtn.style.display === 'block';
+        downloadBtn.style.display = isOpen ? 'none' : 'block';
+
+        openDownloadMenu = isOpen ? null : downloadBtn;
+      };
+
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(optionsBtn);
+        wrapper.appendChild(downloadBtn);
+        gallery.appendChild(wrapper);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      gallery.innerHTML = '<p class="text-danger">Error al cargar las fotos</p>';
+    });
+
+    document.addEventListener('click', () => {
+  if (openDownloadMenu) {
+    openDownloadMenu.style.display = 'none';
+    openDownloadMenu = null;
+  }
+});
+
+  // =====================
+  // SUBIR FOTO (ROBUSTO)
+  // =====================
+  uploadBtn.addEventListener('click', async () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('Selecciona una imagen');
+      return;
+    }
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Optimizando...';
+
+    try {
+      const optimizedBlob = await resizeImage(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        uploadBtn.textContent = 'Subiendo...';
+
+        const base64 = reader.result.split(',')[1];
+
+        const formData = new URLSearchParams();
+        formData.append('fileData', base64);
+        formData.append('fileName', file.name.replace(/\.[^/.]+$/, '.jpg'));
+        formData.append('mimeType', 'image/jpeg');
+
+        fetch(scriptURL, {
+          method: 'POST',
+          body: formData
+        })
+        .then(() => location.reload())
+        .catch(err => {
+          console.error(err);
+          alert('Error al subir la imagen');
+          uploadBtn.disabled = false;
+          uploadBtn.textContent = 'Subir foto al álbum';
+        });
+      };
+
+      reader.readAsDataURL(optimizedBlob);
+
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo procesar la imagen');
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = 'Subir foto al álbum';
+    }
+  });
+
+});
+</script>
+
+
+
+<footer id="contacto" class="py-4 border-top">
+  <div class="container text-center">
+    <p class="mb-2">
+      <a href="index.html" class="text-decoration-none text-muted mx-2">Inicio</a> |
+      <a href="itinerario.html" class="text-decoration-none text-muted mx-2">Itinerario</a> |
+      <a href="confirmacion.html" class="text-decoration-none text-muted mx-2">Confirmación</a> |
+      <a href="fotos.html" class="text-decoration-none text-muted mx-2">Fotos</a>
+    </p>
+
+    <div class="small text-muted mb-2">
+      © 2026 Ana & Yoseba 
+    </div>
+
+    <div class="small text-muted">
+      <a href="mailto:anacarmonacordoba@gmail.com" class="text-decoration-none text-dark">anacarmonacordoba@gmail.com</a> | 📱 692 260 215
+    </div>
+
+    <div class="small text-muted">
+      <a href="mailto:garciapardoyoseba@gmail.com" class="text-decoration-none text-dark">garciapardoyoseba@gmail.com</a> | 📱 611 459 193
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="main.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+</body>
+</html>

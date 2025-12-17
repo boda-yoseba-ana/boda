@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmación | Ana & Yoseba</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .btn-reject {
+      background-color: #f8f9fa;
+      color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-reject:hover {
+      background-color: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="centered-nav fixed-top">
+  <div class="container text-center">
+    <a class="nav-brand-title d-block" href="index.html">Ana & Yoseba</a>
+    
+    <ul class="nav-links list-unstyled d-flex justify-content-center border-top">
+      <li class="nav-item"><a class="nav-link nav-box" href="index.html">¡Bienvenidos!</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="itinerario.html">El Gran Día</a></li>
+      <li class="nav-item"><a class="nav-link nav-box active" href="confirmacion.html">Confirmación</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="fotos.html">Álbum</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-5 pt-5"> 
+  <h1 class="text-center mb-4">Confirmación de asistencia</h1>
+
+  <div class="itinerary-text-box mb-5">
+    <p class="text-center">
+      Para confirmar tu asistencia a la boda sólo tienes que indicar lo que te une a nosotros, seleccionar tu nombre en la lista y rellenar tu teléfono. 
+      Si lamentablemente no puedes venir, pulsa el botón <strong>"No podré asistir"</strong> para que podamos tenerlo en cuenta.
+    </p>
+  </div>
+
+  <form id="formConfirmacion" class="mx-auto custom-form-box mb-5 shadow-sm" style="max-width:500px;">
+    <label class="form-label small fw-bold">1. Selecciona tu grupo</label>
+    <select id="grupo" class="form-select mb-3" required>
+      <option value="">Selecciona tu grupo...</option>
+      <option>Familia Ana</option>
+      <option>Familia Yoseba</option>
+      <option>Amigos Ana</option>
+      <option>Amigos Yoseba</option>
+    </select>
+
+    <label class="form-label small fw-bold">2. Busca tu nombre</label>
+    <select id="nombre" class="form-select mb-3" disabled required>
+      <option value="">Selecciona primero el grupo</option>
+    </select>
+
+    <label class="form-label small fw-bold">3. Teléfono móvil</label>
+    <input type="tel" id="telefono" class="form-control mb-3" 
+       placeholder="Ej: 600000000" 
+       pattern="[0-9]{9}" 
+       maxlength="9" 
+       required title="El teléfono debe tener 9 números">
+
+    <label class="form-label small fw-bold">4. Dedicatoria (opcional)</label>
+    <textarea id="mensaje" class="form-control mb-3" rows="3" placeholder="Escribe algo para los novios..."></textarea>
+
+    <div class="row g-2">
+      <div class="col-md-7">
+        <button type="submit" id="btnConfirmar" class="btn btn-primary w-100 py-2">Confirmar asistencia</button>
+      </div>
+      <div class="col-md-5">
+        <button type="button" id="btnNegar" class="btn btn-reject w-100 py-2">No podré asistir</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx78dTFvM49q_HHtcMXqiCA2hLcEKO98xqNY-9fIAK-3owrvl1JlHuyGE1oD84RCIAw/exec'; // <--- ASEGÚRATE DE QUE SEA LA URL DE TU ÚLTIMA IMPLEMENTACIÓN
+  let invitados = [];
+
+  // 1. CARGA DE DATOS MEJORADA
+  function cargarInvitados() {
+    const selectorNombre = document.getElementById('nombre');
+    const selectorGrupo = document.getElementById('grupo');
+    
+    // Bloqueamos mientras carga
+    selectorNombre.disabled = true;
+    selectorNombre.innerHTML = '<option value="">Cargando lista...</option>';
+
+    fetch(scriptURL)
+      .then(res => res.json())
+      .then(data => {
+        invitados = data;
+        console.log("Datos recibidos:", invitados);
+        
+        // Si el usuario ya seleccionó un grupo antes de que terminara de cargar,
+        // forzamos la actualización de los nombres ahora.
+        if (selectorGrupo.value !== "") {
+          actualizarNombres(selectorGrupo.value);
+        } else {
+          selectorNombre.innerHTML = '<option value="">Selecciona primero el grupo</option>';
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        selectorNombre.innerHTML = '<option value="">Error al conectar con Excel</option>';
+      });
+  }
+
+  // 2. FUNCIÓN PARA FILTRAR NOMBRES
+  function actualizarNombres(grupoSeleccionado) {
+    const selectorNombre = document.getElementById('nombre');
+    selectorNombre.innerHTML = '<option value="">Selecciona tu nombre</option>';
+    
+    if (!grupoSeleccionado) {
+      selectorNombre.disabled = true;
+      return;
+    }
+
+    // Filtrado insensible a espacios extra
+    const filtrados = invitados.filter(i => String(i.grupo).trim() === String(grupoSeleccionado).trim());
+
+    if (filtrados.length > 0) {
+      filtrados.forEach(i => {
+        let opt = document.createElement('option');
+        opt.value = i.nombre;
+        opt.innerHTML = i.nombre;
+        selectorNombre.appendChild(opt);
+      });
+      selectorNombre.disabled = false;
+    } else {
+      // Si invitados ya tiene datos pero no hay coincidencia
+      if (invitados.length > 0) {
+        selectorNombre.innerHTML = '<option value="">No hay nombres en este grupo</option>';
+      } else {
+        selectorNombre.innerHTML = '<option value="">Cargando datos...</option>';
+      }
+      selectorNombre.disabled = true;
+    }
+  }
+
+  // 3. LISTENERS
+  window.addEventListener('DOMContentLoaded', cargarInvitados);
+
+  document.getElementById('grupo').addEventListener('change', function(e) {
+    actualizarNombres(e.target.value);
+  });
+
+  // 4. FUNCIÓN DE ENVÍO (Mantenemos la lógica de SÍ/NEGADO)
+  function enviarFormulario(tipoAsistencia) {
+    const nombre = document.getElementById('nombre').value;
+    const telefono = document.getElementById('telefono').value;
+    
+    if(!nombre || !telefono) {
+      alert("Por favor, selecciona tu nombre e introduce un teléfono.");
+      return;
+    }
+
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const btnNegar = document.getElementById('btnNegar');
+    
+    btnConfirmar.disabled = true;
+    btnNegar.disabled = true;
+    btnConfirmar.innerHTML = 'Enviando...';
+
+    const params = new URLSearchParams({
+      nombre: nombre,
+      telefono: telefono,
+      mensaje: document.getElementById('mensaje').value,
+      asistencia: tipoAsistencia 
+    });
+
+    fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
+      .then(res => {
+        alert(tipoAsistencia === 'SÍ' ? '¡Gracias por confirmar!' : 'Gracias por avisarnos, te echaremos de menos.');
+        location.reload();
+      })
+      .catch(error => {
+        alert('Error al procesar. Inténtalo de nuevo.');
+        btnConfirmar.disabled = false;
+        btnNegar.disabled = false;
+      });
+  }
+
+  document.getElementById('formConfirmacion').addEventListener('submit', e => {
+    e.preventDefault();
+    enviarFormulario('SÍ');
+  });
+
+  document.getElementById('btnNegar').addEventListener('click', () => {
+    enviarFormulario('NEGADO');
+  });
+</script>
+
+<footer id="contacto" class="py-4 border-top">
+  <div class="container text-center">
+    <p class="mb-2">
+      <a href="index.html" class="text-decoration-none text-muted mx-2">Inicio</a> |
+      <a href="itinerario.html" class="text-decoration-none text-muted mx-2">Itinerario</a> |
+      <a href="confirmacion.html" class="text-decoration-none text-muted mx-2">Confirmación</a> |
+      <a href="fotos.html" class="text-decoration-none text-muted mx-2">Fotos</a>
+    </p>
+
+    <div class="small text-muted mb-2">
+      © 2026 Ana & Yoseba 
+    </div>
+
+    <div class="small text-muted">
+      <a href="mailto:anacarmonacordoba@gmail.com" class="text-decoration-none text-dark">anacarmonacordoba@gmail.com</a> | 📱 692 260 215
+    </div>
+
+    <div class="small text-muted">
+      <a href="mailto:garciapardoyoseba@gmail.com" class="text-decoration-none text-dark">garciapardoyoseba@gmail.com</a> | 📱 611 459 193
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="main.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+</body>
+</html>
