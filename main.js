@@ -36,40 +36,5 @@
       }
   });
 
-  const fileGallery = document.getElementById('fileGallery');
-  const fileCamera = document.getElementById('fileCamera');
-  const uploadBtn = document.getElementById('uploadBtn');
-  let selectedFile = null; // Para guardar el archivo seleccionado
-
-  // Función para manejar la selección de archivo
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    selectedFile = file; // Guardamos el archivo para el botón de subir
-    
-    // Mostrar preview
-    if (previewURL) URL.revokeObjectURL(previewURL);
-    previewURL = URL.createObjectURL(file);
-    previewImg.src = previewURL;
-    previewContainer.style.display = 'block';
-    
-    // Mostrar el botón de subir ahora que hay una foto
-    uploadBtn.style.display = 'block';
-  };
-
-  // Escuchar a ambos inputs
-  fileGallery.addEventListener('change', handleFileSelect);
-  fileCamera.addEventListener('change', handleFileSelect);
-
-  // Modifica tu función de uploadBtn.addEventListener para que use 'selectedFile'
-  uploadBtn.addEventListener('click', async () => {
-    if (!selectedFile) return;
-    
-    uploadBtn.disabled = true;
-    uploadBtn.textContent = 'Optimizando...';
-
-    try {
-      const optimizedBlob = await resizeImage(selectedFile);
-      // ... el resto de tu código de subida sigue IGUAL ...
+  
 

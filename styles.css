@@ -25,6 +25,26 @@ html, body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
+/* Color personalizado para los botones de fotos */
+.btn-boda-verde {
+    background-color: rgba(188, 198, 184, 0.8) !important;
+    border: 1px solid rgba(188, 198, 184, 1);
+    color: #4a4a4a !important;
+    transition: background-color 0.3s ease;
+}
+
+.btn-boda-verde:hover {
+    background-color: rgba(188, 198, 184, 0.8) !important;
+}
+
+/* Ajuste para que el botón de descarga herede el estilo de tu menú */
+#downloadAllBtn {
+    background-color: rgba(188, 198, 184, 0.8) !important;
+    border-radius: 5px;
+    padding: 8px 15px;
+    text-decoration: none;
+    display: inline-block;
+}
 
 body {
   font-family: Georgia, serif; 

@@ -57,21 +57,26 @@
   </div>
 
   <div class="d-grid gap-2">
-    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileGallery').click()">
+    <button type="button" class="btn btn-boda-verde" onclick="document.getElementById('fileGallery').click()">
       🖼️ Elegir de la Galería
     </button>
-    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileCamera').click()">
+    <button type="button" class="btn btn-boda-verde" onclick="document.getElementById('fileCamera').click()">
       📸 Hacer una Foto
     </button>
-    <button id="uploadBtn" class="btn btn-primary mt-3" style="display:none;">Subir foto al álbum</button>
+    
+    <button id="uploadBtn" class="btn btn-primary mt-3" style="display:none; background-color: #7a8676; border:none;">
+      Subir foto al álbum
+    </button>
   </div>
 
   <input type="file" id="fileGallery" accept="image/*" style="display:none;">
   <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none;">
 </div>
 
-<div class="text-center mt-4">
-  <button id="downloadAllBtn" class="btn btn-light btn-sm border">📥 Descargar todo el álbum (.zip)</button>
+<div class="text-center mb-4">
+  <button id="downloadAllBtn" class="nav-link nav-box mx-auto" style="border: 1px solid #ccc;">
+    📥 Descargar Álbum Completo (.zip)
+  </button>
 </div>
 
   <hr class="my-5">
