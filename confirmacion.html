@@ -52,7 +52,7 @@
 </nav>
 
 <div class="container mt-5 pt-5"> 
-  <h1 class="text-center mb-4">Confirmación de asistencia</h1>
+  <h1 class="text-center mb-4">CONFIRMACIÓN</h1>
 
   <div class="content-panel mx-auto" style="max-width: 1000px;">
     <p class="text-center">
@@ -61,22 +61,16 @@
     </p>
   </div>
 
-  <form id="formConfirmacion" class="mx-auto custom-form-box mb-5 shadow-sm" style="max-width:500px;">
-    <label class="form-label small fw-bold">1. Selecciona tu grupo</label>
-    <select id="grupo" class="form-select mb-3" required>
-      <option value="">Selecciona tu grupo...</option>
-      <option>Familia Ana</option>
-      <option>Familia Yoseba</option>
-      <option>Amigos Ana</option>
-      <option>Amigos Yoseba</option>
-    </select>
+  <div id="formConfirmacion" class="mx-auto custom-form-box mb-5 shadow-sm" style="max-width:500px;">
+    <label class="form-label small fw-bold">1. Escribe tu nombre</label>
+    <div class="position-relative mb-3">
+        <input type="text" id="buscadorNombre" class="form-control" placeholder="Escribe Adri, Isa, Lau..." autocomplete="off">
+        <ul id="listaSugerencias" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none; max-height: 200px; overflow-y: auto;">
+        </ul>
+        <input type="hidden" id="nombreReal" required>
+    </div>
 
-    <label class="form-label small fw-bold">2. Busca tu nombre</label>
-    <select id="nombre" class="form-select mb-3" disabled required>
-      <option value="">Selecciona primero el grupo</option>
-    </select>
-
-    <label class="form-label small fw-bold">3. Teléfono móvil</label>
+    <label class="form-label small fw-bold">2. Teléfono móvil</label>
     <input type="tel" id="telefono" class="form-control mb-3" 
        placeholder="Ej: 600000000" 
        pattern="[0-9]{9}" 
@@ -94,125 +88,103 @@
         <button type="button" id="btnNegar" class="btn btn-reject w-100 py-2">No podré asistir</button>
       </div>
     </div>
-  </form>
+  </div>
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbx78dTFvM49q_HHtcMXqiCA2hLcEKO98xqNY-9fIAK-3owrvl1JlHuyGE1oD84RCIAw/exec'; // <--- ASEGÚRATE DE QUE SEA LA URL DE TU ÚLTIMA IMPLEMENTACIÓN
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwf0AnM9Sobr8Jmnnmt7Rg6js1RUkab-4dL0Nd-bv0MtHhgfzgsOPFfqm4RSQH7LBQQ/exec'; 
   let invitados = [];
 
-  // 1. CARGA DE DATOS MEJORADA
-  function cargarInvitados() {
-    const selectorNombre = document.getElementById('nombre');
-    const selectorGrupo = document.getElementById('grupo');
-    
-    // Bloqueamos mientras carga
-    selectorNombre.disabled = true;
-    selectorNombre.innerHTML = '<option value="">Cargando lista...</option>';
+  const buscador = document.getElementById('buscadorNombre');
+  const listaSugerencias = document.getElementById('listaSugerencias');
+  const nombreReal = document.getElementById('nombreReal');
 
+  // Cargar datos al inicio
+  window.addEventListener('DOMContentLoaded', () => {
     fetch(scriptURL)
       .then(res => res.json())
-      .then(data => {
-        invitados = data;
-        console.log("Datos recibidos:", invitados);
-        
-        // Si el usuario ya seleccionó un grupo antes de que terminara de cargar,
-        // forzamos la actualización de los nombres ahora.
-        if (selectorGrupo.value !== "") {
-          actualizarNombres(selectorGrupo.value);
-        } else {
-          selectorNombre.innerHTML = '<option value="">Selecciona primero el grupo</option>';
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        selectorNombre.innerHTML = '<option value="">Error al conectar con Excel</option>';
-      });
-  }
-
-  // 2. FUNCIÓN PARA FILTRAR NOMBRES
-  function actualizarNombres(grupoSeleccionado) {
-    const selectorNombre = document.getElementById('nombre');
-    selectorNombre.innerHTML = '<option value="">Selecciona tu nombre</option>';
-    
-    if (!grupoSeleccionado) {
-      selectorNombre.disabled = true;
-      return;
-    }
-
-    // Filtrado insensible a espacios extra
-    const filtrados = invitados.filter(i => String(i.grupo).trim() === String(grupoSeleccionado).trim());
-
-    if (filtrados.length > 0) {
-      filtrados.forEach(i => {
-        let opt = document.createElement('option');
-        opt.value = i.nombre;
-        opt.innerHTML = i.nombre;
-        selectorNombre.appendChild(opt);
-      });
-      selectorNombre.disabled = false;
-    } else {
-      // Si invitados ya tiene datos pero no hay coincidencia
-      if (invitados.length > 0) {
-        selectorNombre.innerHTML = '<option value="">No hay nombres en este grupo</option>';
-      } else {
-        selectorNombre.innerHTML = '<option value="">Cargando datos...</option>';
-      }
-      selectorNombre.disabled = true;
-    }
-  }
-
-  // 3. LISTENERS
-  window.addEventListener('DOMContentLoaded', cargarInvitados);
-
-  document.getElementById('grupo').addEventListener('change', function(e) {
-    actualizarNombres(e.target.value);
+      .then(data => { invitados = data; })
+      .catch(err => console.error("Error cargando invitados", err));
   });
 
-  // 4. FUNCIÓN DE ENVÍO (Mantenemos la lógica de SÍ/NEGADO)
-  function enviarFormulario(tipoAsistencia) {
-    const nombre = document.getElementById('nombre').value;
-    const telefono = document.getElementById('telefono').value;
+  // Lógica del buscador
+  buscador.addEventListener('input', (e) => {
+    const texto = e.target.value.toLowerCase().trim();
+    listaSugerencias.innerHTML = '';
     
-    if(!nombre || !telefono) {
-      alert("Por favor, selecciona tu nombre e introduce un teléfono.");
+    if (texto.length < 2) { // Empezar a buscar tras 2 letras
+      listaSugerencias.style.display = 'none';
       return;
     }
 
-    const btnConfirmar = document.getElementById('btnConfirmar');
-    const btnNegar = document.getElementById('btnNegar');
-    
-    btnConfirmar.disabled = true;
-    btnNegar.disabled = true;
-    btnConfirmar.innerHTML = 'Enviando...';
+    // Filtra nombres que CONTENGAN lo escrito (Adri encontrará Adrián)
+    const coincidencias = invitados.filter(i => 
+      i.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(texto)
+    );
+
+    if (coincidencias.length > 0) {
+      coincidencias.forEach(i => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-action cursor-pointer';
+        li.style.cursor = 'pointer';
+        li.textContent = i.nombre;
+        li.onclick = () => {
+          buscador.value = i.nombre;
+          nombreReal.value = i.nombre; // Guardamos el nombre exacto de la Excel
+          listaSugerencias.style.display = 'none';
+        };
+        listaSugerencias.appendChild(li);
+      });
+      listaSugerencias.style.display = 'block';
+    } else {
+      listaSugerencias.style.display = 'none';
+    }
+  });
+
+  // Cerrar lista si se pincha fuera
+  document.addEventListener('click', (e) => {
+    if (e.target !== buscador) listaSugerencias.style.display = 'none';
+  });
+
+  function enviar(asistencia) {
+    const nombre = nombreReal.value;
+    const telefono = document.getElementById('telefono').value;
+
+    if (!nombre) {
+      alert("Por favor, selecciona tu nombre de la lista desplegable.");
+      return;
+    }
+    if (telefono.length < 9) {
+      alert("Introduce un teléfono válido.");
+      return;
+    }
+
+    const btnC = document.getElementById('btnConfirmar');
+    const btnN = document.getElementById('btnNegar');
+    btnC.disabled = btnN.disabled = true;
+    btnC.textContent = "Enviando...";
 
     const params = new URLSearchParams({
       nombre: nombre,
       telefono: telefono,
       mensaje: document.getElementById('mensaje').value,
-      asistencia: tipoAsistencia 
+      asistencia: asistencia
     });
 
     fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
-      .then(res => {
-        alert(tipoAsistencia === 'SÍ' ? '¡Gracias por confirmar!' : 'Gracias por avisarnos, te echaremos de menos.');
+      .then(() => {
+        alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
         location.reload();
       })
-      .catch(error => {
-        alert('Error al procesar. Inténtalo de nuevo.');
-        btnConfirmar.disabled = false;
-        btnNegar.disabled = false;
+      .catch(() => {
+        alert("Error al enviar. Inténtalo de nuevo.");
+        btnC.disabled = btnN.disabled = false;
+        btnC.textContent = "Confirmar asistencia";
       });
   }
 
-  document.getElementById('formConfirmacion').addEventListener('submit', e => {
-    e.preventDefault();
-    enviarFormulario('SÍ');
-  });
-
-  document.getElementById('btnNegar').addEventListener('click', () => {
-    enviarFormulario('NEGADO');
-  });
+  document.getElementById('btnConfirmar').onclick = () => enviar('SÍ');
+  document.getElementById('btnNegar').onclick = () => enviar('NEGADO');
 </script>
 
 <footer id="contacto" class="py-4 border-top">
