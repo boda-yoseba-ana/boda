@@ -26,6 +26,8 @@
       z-index: 20; padding: 4px 8px; display: none; 
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
 
@@ -50,12 +52,27 @@
   </div>
 
   <div id="upload-section" class="mx-auto bg-white p-4 shadow-sm rounded" style="max-width: 500px;">
-    <div id="preview-container">
-      <img id="preview-img" src="" alt="Vista previa">
-    </div>
-    <input type="file" id="fileInput" class="form-control mb-3" accept="image/*" onfocus="this.value=''">
-    <button id="uploadBtn" class="btn btn-primary w-100">Subir foto al álbum</button>
+  <div id="preview-container">
+    <img id="preview-img" src="" alt="Vista previa">
   </div>
+
+  <div class="d-grid gap-2">
+    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileGallery').click()">
+      🖼️ Elegir de la Galería
+    </button>
+    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileCamera').click()">
+      📸 Hacer una Foto
+    </button>
+    <button id="uploadBtn" class="btn btn-primary mt-3" style="display:none;">Subir foto al álbum</button>
+  </div>
+
+  <input type="file" id="fileGallery" accept="image/*" style="display:none;">
+  <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none;">
+</div>
+
+<div class="text-center mt-4">
+  <button id="downloadAllBtn" class="btn btn-light btn-sm border">📥 Descargar todo el álbum (.zip)</button>
+</div>
 
   <hr class="my-5">
 
@@ -82,32 +99,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const scriptURL = 'https://script.google.com/macros/s/AKfycbx9u9StmuEwsor0tZefxwZZ0BHWbHL-5Z_w_38pOQT6f51dqhVkh3DZShnRyPIaw50N/exec';
 
   const gallery = document.getElementById('gallery');
-  const fileInput = document.getElementById('fileInput');
   const uploadBtn = document.getElementById('uploadBtn');
   const previewContainer = document.getElementById('preview-container');
   const previewImg = document.getElementById('preview-img');
+  
+  // Nuevos elementos para los dos botones
+  const fileGallery = document.getElementById('fileGallery');
+  const fileCamera = document.getElementById('fileCamera');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
 
   const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
   const modalImg = document.getElementById('modalImg');
 
-  // =====================
-  // PREVISUALIZACIÓN
-  // =====================
+  let selectedFile = null; 
   let previewURL = null;
 
-fileInput.addEventListener('change', () => {
-  const file = fileInput.files[0];
-  if (!file) return;
+  // =====================
+  // MANEJO DE SELECCIÓN
+  // =====================
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  // Liberar preview anterior
-  if (previewURL) {
-    URL.revokeObjectURL(previewURL);
-  }
+    selectedFile = file; // Guardamos el archivo globalmente para el botón de subir
 
-  previewURL = URL.createObjectURL(file);
-  previewImg.src = previewURL;
-  previewContainer.style.display = 'block';
-});
+    if (previewURL) {
+      URL.revokeObjectURL(previewURL);
+    }
+
+    previewURL = URL.createObjectURL(file);
+    previewImg.src = previewURL;
+    previewContainer.style.display = 'block';
+    
+    // Mostramos el botón de subir y hacemos scroll hacia él
+    uploadBtn.style.display = 'block';
+    uploadBtn.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Escuchar a ambos inputs ocultos
+  fileGallery.addEventListener('change', handleFileSelect);
+  fileCamera.addEventListener('change', handleFileSelect);
 
 
   // =====================
@@ -117,13 +148,10 @@ fileInput.addEventListener('change', () => {
     return new Promise(resolve => {
       const img = new Image();
       const reader = new FileReader();
-
       reader.onload = e => img.src = e.target.result;
       reader.readAsDataURL(file);
-
       img.onload = () => {
         let { width, height } = img;
-
         if (width > height && width > maxSize) {
           height *= maxSize / width;
           width = maxSize;
@@ -131,19 +159,12 @@ fileInput.addEventListener('change', () => {
           width *= maxSize / height;
           height = maxSize;
         }
-
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(
-          blob => resolve(blob),
-          'image/jpeg',
-          quality
-        );
+        canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
       };
     });
   }
@@ -157,52 +178,38 @@ fileInput.addEventListener('change', () => {
     .then(res => res.json())
     .then(data => {
       gallery.innerHTML = '';
-
       if (!Array.isArray(data) || data.length === 0) {
         gallery.innerHTML = '<p class="text-muted">Aún no hay fotos subidas. ¡Anímate y se el primero!</p>';
         return;
       }
-
       data.forEach(photo => {
         const wrapper = document.createElement('div');
         wrapper.className = 'photo-wrapper shadow-sm';
-
         const img = document.createElement('img');
         img.src = photo.data;
         img.className = 'gallery-img';
-
         img.onclick = () => {
           modalImg.src = photo.data;
           imageModal.show();
         };
-
         const optionsBtn = document.createElement('div');
         optionsBtn.className = 'photo-options';
         optionsBtn.textContent = '⋮';
-
         const downloadBtn = document.createElement('a');
         downloadBtn.href = photo.data;
         downloadBtn.download = photo.name || 'foto.jpg';
         downloadBtn.className = 'download-link btn btn-sm btn-light shadow';
         downloadBtn.textContent = '📥 Descargar';
         downloadBtn.style.display = 'none';
-
         optionsBtn.onclick = e => {
           e.stopPropagation();
-
-          // Cerrar cualquier otro menú abierto
-         if (openDownloadMenu && openDownloadMenu !== downloadBtn) {
-                  openDownloadMenu.style.display = 'none';
-      }
-
-        // Toggle del actual
-      const isOpen = downloadBtn.style.display === 'block';
-        downloadBtn.style.display = isOpen ? 'none' : 'block';
-
-        openDownloadMenu = isOpen ? null : downloadBtn;
-      };
-
-
+          if (openDownloadMenu && openDownloadMenu !== downloadBtn) {
+            openDownloadMenu.style.display = 'none';
+          }
+          const isOpen = downloadBtn.style.display === 'block';
+          downloadBtn.style.display = isOpen ? 'none' : 'block';
+          openDownloadMenu = isOpen ? null : downloadBtn;
+        };
         wrapper.appendChild(img);
         wrapper.appendChild(optionsBtn);
         wrapper.appendChild(downloadBtn);
@@ -214,20 +221,19 @@ fileInput.addEventListener('change', () => {
       gallery.innerHTML = '<p class="text-danger">Error al cargar las fotos</p>';
     });
 
-    document.addEventListener('click', () => {
-  if (openDownloadMenu) {
-    openDownloadMenu.style.display = 'none';
-    openDownloadMenu = null;
-  }
-});
+  document.addEventListener('click', () => {
+    if (openDownloadMenu) {
+      openDownloadMenu.style.display = 'none';
+      openDownloadMenu = null;
+    }
+  });
 
   // =====================
-  // SUBIR FOTO (ROBUSTO)
+  // SUBIR FOTO
   // =====================
   uploadBtn.addEventListener('click', async () => {
-    const file = fileInput.files[0];
-    if (!file) {
-      alert('Selecciona una imagen');
+    if (!selectedFile) {
+      alert('Selecciona una imagen primero');
       return;
     }
 
@@ -235,17 +241,14 @@ fileInput.addEventListener('change', () => {
     uploadBtn.textContent = 'Optimizando...';
 
     try {
-      const optimizedBlob = await resizeImage(file);
-
+      const optimizedBlob = await resizeImage(selectedFile);
       const reader = new FileReader();
       reader.onload = () => {
         uploadBtn.textContent = 'Subiendo...';
-
         const base64 = reader.result.split(',')[1];
-
         const formData = new URLSearchParams();
         formData.append('fileData', base64);
-        formData.append('fileName', file.name.replace(/\.[^/.]+$/, '.jpg'));
+        formData.append('fileName', selectedFile.name.replace(/\.[^/.]+$/, '.jpg'));
         formData.append('mimeType', 'image/jpeg');
 
         fetch(scriptURL, {
@@ -260,9 +263,7 @@ fileInput.addEventListener('change', () => {
           uploadBtn.textContent = 'Subir foto al álbum';
         });
       };
-
       reader.readAsDataURL(optimizedBlob);
-
     } catch (err) {
       console.error(err);
       alert('No se pudo procesar la imagen');
@@ -271,9 +272,40 @@ fileInput.addEventListener('change', () => {
     }
   });
 
+  // =====================
+  // DESCARGAR TODO (ZIP)
+  // =====================
+  downloadAllBtn.addEventListener('click', async () => {
+    const images = document.querySelectorAll('.gallery-img');
+    if (images.length === 0) {
+      alert("Aún no hay fotos en la galería");
+      return;
+    }
+
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.textContent = 'Comprimiendo álbum...';
+
+    const zip = new JSZip();
+    const folder = zip.folder("fotos_boda");
+
+    images.forEach((img, index) => {
+      const base64Data = img.src.split(',')[1];
+      folder.file(`boda_foto_${index + 1}.jpg`, base64Data, {base64: true});
+    });
+
+    try {
+      const content = await zip.generateAsync({type:"blob"});
+      saveAs(content, "Album_Fotos_Yoseba_Ana.zip");
+    } catch (e) {
+      alert("Error al descargar");
+    } finally {
+      downloadAllBtn.disabled = false;
+      downloadAllBtn.textContent = '📥 Descargar Álbum Completo (.zip)';
+    }
+  });
+
 });
 </script>
-
 
 
 <footer id="contacto" class="py-4 border-top">
