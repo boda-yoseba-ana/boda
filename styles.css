@@ -1,11 +1,36 @@
 /* -------------------------------------------------------------------------- */
-/* ESTILO GLOBAL Y HERO                               */
+/* ESTILO GLOBAL Y HERO                                                       */
 /* -------------------------------------------------------------------------- */
 
-/* APLICA LA FUENTE GEORGIA A TODO EL TEXTO DE LA WEB */
+html, body {
+    min-height: 101vh; 
+}
+
+#formConfirmacion .btn-primary {
+  background-color: rgba(188, 198, 184, 0.7) !important;
+  border-color: rgba(188, 198, 184, 0.7) !important;
+  color: #333 !important;
+}
+
+#formConfirmacion .btn-primary:hover {
+  background-color: rgba(188, 198, 184, 0.95) !important;
+  border-color: rgba(188, 198, 184, 0.95) !important;
+}
+
+#formConfirmacion {
+  background-color: rgba(255, 255, 255, 0.5) ; /* más contraste */
+  border: 1px solid rgba(122, 138, 118, 0.5);
+  border-radius: 18px;
+  padding: 40px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+
 body {
   font-family: Georgia, serif; 
-  background-color: rgba(214, 221, 213, 1)!important;
+  background-color: rgba(214, 221, 213, 1) !important;
+  margin: 0;
+  padding: 0;
 }
 
 .hero-section {
@@ -15,7 +40,6 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-
   display: flex;
   align-items: center;
 }
@@ -29,338 +53,152 @@ body {
 .hero-content {
   position: relative;
   z-index: 1;
+  width: 100%;
 }
 
-/* Contador */
 #contador span {
   font-size: 5rem;
   font-weight: bold;
   display: block;
 }
 
-/* --- ESTILO PARA EL SUBTÍTULO EN PANEL RESPONSIVO --- */
+/* PANEL ORIGINAL (Página Principal) */
 .hero-text-box {
   background: rgba(188, 198, 184, 0.5); 
   padding: 15px 30px; 
-  border-radius: 15px; 
-  width: 110%;
-  max-width: 2000px; 
-  margin: 20px auto 0 auto; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 20px;
 }
 
-/* Ajuste del texto dentro del panel */
-.hero-text-box p {
-  margin: 0;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
+/* NUEVA REGLA: PANELES PARA EL RESTO DE PÁGINAS (Itinerario, Confirmación, etc) */
+.content-panel {
+    background: rgba(188, 198, 184, 0.5); 
+  padding: 5px 5px !important;
+  border-radius: 15px;
+  margin: 40px auto;
+  margin-top: 20px;
+  border: 1px solid rgba(122, 138, 118, 0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100px;
 }
 
-.display-4 {
-    font-size: 5.5rem !important; /* Añade esto para obligar al cambio */
-    font-weight: light;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-}
-
-.itinerary-img {
-    height: 350px; /* Ajusta la altura a tu gusto */
-    width: 100%;
-    object-fit: cover; /* Esto evita que la imagen se deforme al estirarse */
-    border-radius: 15px; /* Manteniendo tu estilo de bordes */
-}
-
-/* --- NUEVO PANEL PARA ITINERARIO (Independiente) --- */
-.itinerary-text-box {
-  /* Puedes cambiar este color sin afectar al de Inicio */
+.content-panel-fotos {
   background: rgba(188, 198, 184, 0.5); 
-  
-  /* Puedes ajustar el espacio interno */
-  padding: 30px 50px; 
-  
-  border-radius: 15px; 
-  
-  /* Si quieres que sea más estrecho o más ancho que el de inicio, cámbialo aquí */
-  max-width: 1200px; 
-  
-  /* Centrado */
-  margin: 20px auto 40px auto; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
-}
-
-/* Estilo para el texto dentro de este panel específico */
-.itinerary-text-box p {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #333; /* Color de letra */
-  line-height: 1.6;
+  padding: 5px 5px !important;
+  border-radius: 15px;
+  margin: 40px auto;
+  margin-top: 20px;
+  border: 1px solid rgba(122, 138, 118, 0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100px;
 }
 
 /* -------------------------------------------------------------------------- */
-/* NAVEGACIÓN CENTRADA Y FIJA                               */
+/* NAVEGACIÓN (RESPONSIVA, SIN NEGRITA)                                       */
 /* -------------------------------------------------------------------------- */
 
-.centered-nav, #contacto {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
-  background-color: rgba(188, 198, 184, 1); 
-  transition: padding-top 0.3s, padding-bottom 0.3s;
+.centered-nav {
+  background-color: rgba(214, 221, 213, 1);
+  transition: all 0.4s ease-in-out;
+  z-index: 1030;
+  width: 100%;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Estilo del Título/Marca "Ana & Yoseba" */
 .nav-brand-title {
-  font-family: Georgia, serif; 
-  font-size: 1.8rem;
-  letter-spacing: 2px;
-  color: #333; 
+  font-family: Georgia, serif;
+  font-size: 2.5rem;
+  color: #333;
   text-decoration: none;
-  
-  /* Margen Superior e Inferior que se esconde */
-  padding-top: 2rem;    
-  padding-bottom: 0.5rem; 
-  opacity: 1; 
-  transition: opacity 0.3s, font-size 0.3s, padding 0.3s;
+  padding: 20px 0 10px;
+  display: block;
+  transition: all 0.4s ease-in-out;
+  max-height: 150px;
+  opacity: 1;
+  overflow: hidden;
 }
 
-/* Estilo para cada "botón" (enlace) */
-.nav-box {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 12px 15px; /* <--- AHORA CON MÁS MARGEN VERTICAL (12px) */
-  color: #555; 
-  text-decoration: none;
-  transition: border-bottom 0.2s; 
-  display: block; 
-}
-
-/* Efecto de "cuadrado seleccionado" o hover (resaltado) */
-.nav-box:hover, 
-.nav-box.active {
-  color: #000; 
-  border-bottom: 1px solid #000; 
-  /* CLAVE: Ajuste de padding para compensar el borde de 1px (12px - 1px = 11px) */
-  padding-bottom: 11px !important; 
+body.scrolled .nav-brand-title {
+  max-height: 0;
+  padding: 0;
+  opacity: 0;
+  margin: 0;
 }
 
 .nav-links {
-        flex-wrap: wrap; 
-        border-top: 1px solid #535353 !important;
-    }
-
-/* Color del recuadro que contiene el formulario en confirmación */
-.custom-form-box {
-  background-color: #ffffff; 
-  padding: 40px;
-  border-radius: 15px;
-  border: 1px solid rgba(188, 198, 184, 0.5); /* Borde en verde salvia suave */
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
-/* Cambiar el botón de rojo a verde salvia oscuro solo en confirmación */
-#formConfirmacion .btn-primary {
-  background-color: #7a8a76 !important; 
-  border-color: #7a8a76 !important;
-  color: white !important;
+.nav-box {
+  display: block;
+  padding: 15px 25px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.3s;
 }
 
-#formConfirmacion .btn-primary:hover {
-  background-color: #5f6d5c !important; 
-}
-
-/* Ajuste de los inputs para que tengan el tono verde salvia en el borde */
-.form-control, .form-select {
-    border: 1px solid rgba(188, 198, 184, 1) !important;
+/* Efecto seleccionado (fondo sí, negrita NO) */
+.nav-box.active {
+  background: rgba(255, 255, 255, 0.4);
+  color: #000;
+  font-weight: normal !important; 
 }
 
 /* -------------------------------------------------------------------------- */
-/* AJUSTE DEL CONTENIDO Y BOTONES                            */
+/* SECCIÓN DE FOTOS (COLORES PEDIDOS)                                         */
 /* -------------------------------------------------------------------------- */
 
-/* Asegura que el contenido no quede oculto bajo el navbar fijo */
-.container.mt-5.pt-5 {
-  padding-top: 8rem !important; /* Valor alto para el inicio */
-  transition: padding-top 0.3s;
-}
-
-/* Sobrescribe estilos del botón principal de Bootstrap (Ejemplo: Rojo Oscuro) */
-.btn-primary {
-    background-color: #A94442 !important; 
-    border-color: #A94442 !important;     
-}
-
-.btn-primary:hover {
-    background-color: #8C3735 !important; 
-    border-color: #8C3735 !important;
-}
-
-/* -------------------------------------------------------------------------- */
-/* EFECTO DE NAVEGACIÓN RETRÁCTIL AL HACER SCROLL (Requiere main.js) */
-/* -------------------------------------------------------------------------- */
-
-/* 1. Cuando la clase 'scrolled' está activa en el body, el título desaparece */
-body.scrolled .nav-brand-title {
-    opacity: 0;           
-    font-size: 0;         
-    padding-top: 0;       
-    padding-bottom: 0;    
-}
-
-/* 2. Cuando la clase 'scrolled' está activa, reducimos el padding del contenido principal para que suba */
-body.scrolled .container.mt-5.pt-5 {
-    padding-top: 7rem !important; 
-}
- /* GALERIA DE FOTOS */
-
- /* Contenedor de cada foto en la galería */
-.photo-wrapper {
-    display: inline-block;
-    overflow: hidden;
-    border-radius: 8px;
-    width: 150px; /* Ajusta según el tamaño de tu grid */
-}
-
-/* Estilo del botón de tres puntitos */
-.photo-options {
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    color: white;
-    background: rgba(0,0,0,0.5);
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 10;
-}
-
-/* --- SUSTITUYE TU BLOQUE DE GALERÍA POR ESTE --- */
-.gallery-container { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
-    gap: 15px; 
-}
-
-.photo-wrapper { 
-    position: relative; 
-    height: 150px; 
-    border-radius: 8px; 
-    overflow: hidden; 
-    display: inline-block;
-    width: 100%; /* Deja que el grid controle el ancho */
-}
-
-.gallery-img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    transition: transform 0.3s ease;
-}
-
-.gallery-img:hover {
-    transform: scale(1.05);
-}
-
-.photo-options {
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    color: white;
-    background: rgba(0,0,0,0.5);
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 10;
-}
-
-.download-link {
-    position: absolute;
-    top: 35px;
-    right: 5px;
-    font-size: 0.7rem;
-    z-index: 20;
-    padding: 2px 8px;
-}
-
-/* --- BUSCA ESTA PARTE (Línea ~123) Y SUSTITÚYELA --- */
 #upload-section {
-  background: rgba(188, 198, 184, 0.5) !important; /* Cambiado de blanco a verde salvia suave */
-  padding: 40px;
-  border-radius: 15px;
-  border: 1px solid rgba(188, 198, 184, 0.5);
-  max-width: 500px;
+    background: rgba(255, 255, 255, 0.6) !important; 
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
 }
 
-/* --- BUSCA ESTA PARTE (Línea ~140) Y SUSTITÚYELA --- */
-.btn-primary {
-    background-color: #7a8a76 !important; /* Cambiado de rojo a verde salvia oscuro */
-    border-color: #7a8a76 !important;     
+#uploadBtn {
+    background-color: #7a8a76 !important; 
+    border-color: #7a8a76 !important;
     color: white !important;
 }
 
-.btn-primary:hover {
-    background-color: #5f6d5c !important; /* Un tono más oscuro para el efecto hover */
-    border-color: #5f6d5c !important;
+/* -------------------------------------------------------------------------- */
+/* AJUSTES RESPONSIVOS Y DE ESPACIADO                                         */
+/* -------------------------------------------------------------------------- */
+
+.container.mt-5.pt-5 {
+    padding-top: 160px !important; 
+    transition: padding-top 0.4s ease-in-out;
 }
 
-/* -------------------------------------------------------------------------- */
-/* MEDIA QUERIES (RESPONSIVO MÓVIL)                               */
-/* -------------------------------------------------------------------------- */
+body.scrolled .container.mt-5.pt-5 {
+    padding-top: 80px !important;
+}
 
 @media (max-width: 768px) {
-    /* Fondo responsivo */
-    .hero-section {
-        background-position: center top; 
-        height: 80vh; 
-    }
+    #contador span { font-size: 2.8rem !important; }
+    .nav-brand-title { font-size: 2.6rem; }
+    .nav-box { font-size: 0.65rem; padding: 12px 6px; }
+    .nav-links { flex-wrap: wrap; }
     
-    /* 1. Ajuste del Título en Móvil: Más pequeño y con menos margen vertical */
-    .nav-brand-title {
-        font-size: 1.5rem; 
-        padding-top: 1rem;    
-        padding-bottom: 0.5rem; 
+    .col-11.col-md-8 {
+        width: 95% !important;
+        margin: 0 auto !important;
     }
 
-    /* 2. Ajuste de Enlaces en Móvil: Se vuelven más compactos y ocupan todo el ancho */
-    .nav-links {
-        flex-wrap: wrap; 
-        border-top: 1px solid #000000 !important;
-    }
-    
-    .nav-links .nav-item {
-        flex-grow: 1; 
-        text-align: center;
-    }
-
-    .nav-box {
-        font-size: 0.65rem; 
-        padding: 10px 5px; /* Ajuste para móvil: más espacio vertical que antes, pero menos que en desktop */
-    }
-
-    /* 3. Ajuste de Margen Superior del Contenido en Móvil (sin scroll) */
-    .container.mt-5.pt-5 {
-        padding-top: 10rem !important; /* Mantenemos un valor alto al inicio */
-    }
-
-    /* 4. Ajuste del Contenido al hacer scroll en móvil */
-    body.scrolled .container.mt-5.pt-5 {
-        padding-top: 5rem !important; /* Mucho más reducido para móvil al hacer scroll */
-    }
-    
-    /* 5. Ajuste del Itinerario en Móvil (espacio entre columnas) */
-    .row.g-4 .col-md-6 {
-        margin-bottom: 2rem; 
-    }
-    
-    .row.g-4 .col-md-6:last-child {
-        margin-bottom: 0;
+    h1 {
+        margin-top: 0 !important;
+        font-size: 1.8rem !important; /* Un poco más pequeño para que no ocupe tanto */
     }
 }
-

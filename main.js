@@ -20,10 +20,16 @@ setInterval(() => {
 }, 1000);
 
 // Código para Navbar Retráctil al hacer scroll
+// Mantén tu código del contador igual arriba...
+
+// Código para Navbar Retráctil Inteligente
 window.addEventListener('scroll', () => {
     const body = document.body;
-    // Si el usuario se ha desplazado más de 100 píxeles
-    if (window.scrollY > 100) {
+    const scrollActual = window.scrollY;
+
+    // Detecta si el usuario ha bajado aunque sea un poco (más de 10px)
+    // Esto asegura que en páginas cortas se esconda casi de inmediato al mover el scroll
+    if (scrollActual > 10) {
         body.classList.add('scrolled');
     } else {
         body.classList.remove('scrolled');
