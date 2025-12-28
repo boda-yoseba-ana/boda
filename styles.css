@@ -206,6 +206,7 @@ body.scrolled .container.mt-5.pt-5 {
     padding-top: 80px !important;
 }
 
+
 @media (max-width: 768px) {
     #contador span { font-size: 2.8rem !important; }
     .nav-brand-title { font-size: 2.6rem; }
