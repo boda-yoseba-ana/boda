@@ -208,46 +208,38 @@ body.scrolled .container.mt-5.pt-5 {
 
 
 @media (max-width: 768px) {
-
-    /* --- NAVBAR FIX --- */
-    body {
-        padding-top: 120px; /* espacio para el navbar fijo */
-    }
-
-    /* HERO SECTION */
+    #contador span { font-size: 2.8rem !important; }
+    .nav-brand-title { font-size: 2.6rem; }
+    .nav-box { font-size: 0.65rem; padding: 12px 6px; }
+    .nav-links { flex-wrap: wrap; }
+    
     .hero-section {
-        position: relative !important;
-
-        width: 100% !important;
-        aspect-ratio: 4 / 5;
-        max-height: 85vh !important;
-
-        background-size: cover !important;
-        background-position: center top !important;
-        background-repeat: no-repeat !important;
-
+        /* Cambiamos a auto para que la sección se ajuste al contenido y no sobre espacio abajo */
+        height: auto !important; 
+        min-height: 550px; /* Altura mínima para asegurar que se vea vuestra foto */
+        
+        /* 'cover' asegura que la imagen llene todo el ancho del móvil sin dejar huecos laterales */
+        background-size: cover !important; 
+        background-position: center bottom !important; 
+        
+        /* Este padding-top empuja vuestros nombres y el contador hacia abajo */
+        padding-top: 275px !important; 
+        padding-bottom: 70px !important;
+        
         display: flex !important;
-        align-items: center !important;
+        flex-direction: column !important;
         justify-content: center !important;
-
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    /* TEXTO ENCIMA DE LA FOTO */
-    .hero-content {
-        position: absolute !important;
-
-        top: 50% !important;
-        transform: translateY(-25%) !important;
-
+        align-items: center !important;
         width: 100% !important;
-        text-align: center !important;
-
-        padding: 0 15px !important;
+        margin: 0 !important;
     }
 
-}
+    .hero-content {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 10px !important;
+        text-align: center !important;
+    }
 
     .container.mt-5.pt-5 {
         padding-top: 200px !important; /* Espacio extra para que el título baje más */
