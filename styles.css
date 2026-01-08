@@ -224,7 +224,7 @@ body.scrolled .container.mt-5.pt-5 {
         
         /* Este padding-top empuja vuestros nombres y el contador hacia abajo */
         padding-top: 275px !important; 
-        padding-bottom: 70px !important;
+        padding-bottom: 50px !important;
         
         display: flex !important;
         flex-direction: column !important;
@@ -232,6 +232,9 @@ body.scrolled .container.mt-5.pt-5 {
         align-items: center !important;
         width: 100% !important;
         margin: 0 !important;
+
+        margin-top: 70px !important; /* altura aproximada del navbar */
+        padding-top: calc(25px + 120px) !important;
     }
 
     .hero-content {
