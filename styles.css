@@ -56,7 +56,7 @@ body {
 .hero-section {
   height: 130vh;
   background-image: url("imgs/roma2.JPG");
-  background-size: 1950px;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
@@ -213,6 +213,11 @@ body.scrolled .container.mt-5.pt-5 {
     .nav-box { font-size: 0.65rem; padding: 12px 6px; }
     .nav-links { flex-wrap: wrap; }
     
+    .hero-section {
+    height: 100vh; /* Un poco más baja en móvil para que sea más cómodo navegar */
+    background-position: 70% center; /* Ajusta este % si quieres mover la foto a los lados en móvil */
+    }
+
     .container.mt-5.pt-5 {
         padding-top: 200px !important; /* Espacio extra para que el título baje más */
     }
