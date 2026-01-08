@@ -214,14 +214,20 @@ body.scrolled .container.mt-5.pt-5 {
     .nav-links { flex-wrap: wrap; }
     
     .hero-section {
-        height: 70vh; /* Bajamos la altura para que no quede tanto espacio vacío */
-        background-size: contain; /* Muestra la foto ENTERA sin ampliarla */
-        background-position: center; /* La pega al borde inferior del menú */
-        background-color: rgba(214, 221, 213, 1); /* Color de fondo igual al de tu web */
+        /* Cambiamos height fijo por aspect-ratio */
+        height: auto; 
+        min-height: 350px; /* Altura mínima para que no se vea minúsculo */
+        aspect-ratio: 4 / 3; /* Esto obliga a la sección a tener la forma de la foto */
+        
+        background-size: cover; /* Ahora sí podemos usar cover porque la sección tiene la forma de la foto */
+        background-position: center 20%; 
+        display: flex;
+        align-items: center;
+        padding: 40px 0; /* Espacio extra para que el texto respire */
     }
 
     .hero-content {
-        padding-top: 20px;
+        padding-top: 60px;
     }
 
     .container.mt-5.pt-5 {
