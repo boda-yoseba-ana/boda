@@ -233,7 +233,7 @@ body.scrolled .container.mt-5.pt-5 {
         width: 100% !important;
         margin: 0 !important;
 
-        margin-top: 70px !important; /* altura aproximada del navbar */
+        margin-top: 120px !important; /* altura aproximada del navbar */
         padding-top: calc(25px + 120px) !important;
     }
 
