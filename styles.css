@@ -76,6 +76,26 @@ body {
   width: 100%;
 }
 
+.footer-hero {
+    height: 60vh; /* Un poco más baja que la principal para que no pese tanto al final */
+    background-image: url("imgs/hero.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    width: 100%;
+}
+
+.footer-herop {
+    height: 60vh; /* Un poco más baja que la principal para que no pese tanto al final */
+    background-image: url("imgs/bodas.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    width: 100%;
+}
+
 #contador span {
   font-size: 5rem;
   font-weight: bold;
@@ -242,6 +262,26 @@ body.scrolled .container.mt-5.pt-5 {
         margin: 0 !important;
         padding: 0 10px !important;
         text-align: center !important;
+    }
+
+    .footer-hero {
+        height: auto !important; 
+        min-height: 400px; /* Ajusta esto según quieras que sea de alta la foto al final */
+        background-size: cover !important; 
+        background-position: center bottom !important; 
+        width: 100% !important;
+        margin-top: 50px !important; /* Espacio con la sección anterior */
+        /* No lleva padding-top porque no hay texto que empujar */
+    }
+
+    .footer-herop {
+        height: auto !important; 
+        min-height: 400px; /* Ajusta esto según quieras que sea de alta la foto al final */
+        background-size: cover !important; 
+        background-position: 38% center !important; 
+        width: 100% !important;
+        margin-top: 50px !important; /* Espacio con la sección anterior */
+        /* No lleva padding-top porque no hay texto que empujar */
     }
 
     .container.mt-5.pt-5 {
