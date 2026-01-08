@@ -214,8 +214,14 @@ body.scrolled .container.mt-5.pt-5 {
     .nav-links { flex-wrap: wrap; }
     
     .hero-section {
-    height: 100vh; /* Un poco más baja en móvil para que sea más cómodo navegar */
-    background-position: 70% center; /* Ajusta este % si quieres mover la foto a los lados en móvil */
+        height: 60vh; /* Bajamos la altura para que no quede tanto espacio vacío */
+        background-size: contain; /* Muestra la foto ENTERA sin ampliarla */
+        background-position: center bottom; /* La pega al borde inferior del menú */
+        background-color: rgba(214, 221, 213, 1); /* Color de fondo igual al de tu web */
+    }
+
+    .hero-content {
+        padding-top: 20px;
     }
 
     .container.mt-5.pt-5 {
