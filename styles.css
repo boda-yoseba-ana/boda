@@ -2,6 +2,12 @@
 /* ESTILO GLOBAL Y HERO                                                       */
 /* -------------------------------------------------------------------------- */
 
+#btnConfirmar {
+    background-color: #7a8a76 !important;
+    border-color: #7a8a76 !important;
+    color: white !important;
+}
+
 html, body {
     min-height: 101vh; 
 }

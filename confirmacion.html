@@ -77,6 +77,18 @@
        maxlength="9" 
        required title="El teléfono debe tener 9 números">
 
+       <div class="mb-3 mt-4">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="checkAlergia">
+        <label class="form-check-label fw-bold small" for="checkAlergia">¿Tienes alguna alergia o intolerancia?</label>
+      </div>
+    </div>
+
+    <div id="panelAlergia" style="display: none;" class="mb-3">
+      <label class="form-label small fw-bold">Indica cuál o cuáles:</label>
+      <textarea id="alergiaDetalle" class="form-control" rows="2" placeholder="Ej: Frutos secos, celíaco..."></textarea>
+    </div>
+
     <label class="form-label small fw-bold">4. Dedicatoria (opcional)</label>
     <textarea id="mensaje" class="form-control mb-3" rows="3" placeholder="Escribe algo para los novios..."></textarea>
 
@@ -92,8 +104,10 @@
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbxrQXrAf8VAAfulFvoLU4KtyauUn1S1q7IVPq_A96FTNYJxlt6Zco7oFwBUqmX8mfJC/exec'; 
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbxtLoZv15_4HRTNiynS7lIqdQTFhGsQ-FocO7VC0ucUGyJWQ-GxjTAmfTkqb9Pio8G5/exec'; 
   let invitados = [];
+  document.getElementById('checkAlergia').addEventListener('change', function(e) {
+  document.getElementById('panelAlergia').style.display = e.target.checked ? 'block' : 'none';});
 
   const buscador = document.getElementById('buscadorNombre');
   const listaSugerencias = document.getElementById('listaSugerencias');
@@ -146,42 +160,48 @@
     if (e.target !== buscador) listaSugerencias.style.display = 'none';
   });
 
-  function enviar(asistencia) {
-    const nombre = nombreReal.value;
-    const telefono = document.getElementById('telefono').value;
+ function enviar(asistencia) {
+  const nombre = nombreReal.value;
+  const telefono = document.getElementById('telefono').value;
+  
+  // Capturamos datos de alergias
+  const esAlergico = document.getElementById('checkAlergia').checked ? "SÍ" : "NO";
+  const detalleAlergia = document.getElementById('alergiaDetalle').value;
 
-    if (!nombre) {
-      alert("Por favor, selecciona tu nombre de la lista desplegable.");
-      return;
-    }
-    if (telefono.length < 9) {
-      alert("Introduce un teléfono válido.");
-      return;
-    }
-
-    const btnC = document.getElementById('btnConfirmar');
-    const btnN = document.getElementById('btnNegar');
-    btnC.disabled = btnN.disabled = true;
-    btnC.textContent = "Enviando...";
-
-    const params = new URLSearchParams({
-      nombre: nombre,
-      telefono: telefono,
-      mensaje: document.getElementById('mensaje').value,
-      asistencia: asistencia
-    });
-
-    fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
-      .then(() => {
-        alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
-        location.reload();
-      })
-      .catch(() => {
-        alert("Error al enviar. Inténtalo de nuevo.");
-        btnC.disabled = btnN.disabled = false;
-        btnC.textContent = "Confirmar asistencia";
-      });
+  if (!nombre) {
+    alert("Por favor, selecciona tu nombre de la lista desplegable.");
+    return;
   }
+  if (telefono.length < 9) {
+    alert("Introduce un teléfono válido.");
+    return;
+  }
+
+  const btnC = document.getElementById('btnConfirmar');
+  const btnN = document.getElementById('btnNegar');
+  btnC.disabled = btnN.disabled = true;
+  btnC.textContent = "Enviando...";
+
+  const params = new URLSearchParams({
+    nombre: nombre,
+    telefono: telefono,
+    mensaje: document.getElementById('mensaje').value,
+    asistencia: asistencia,
+    alergico: esAlergico, // Nueva variable
+    alergiaDetalle: detalleAlergia // Nueva variable
+  });
+
+  fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
+    .then(() => {
+      alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
+      location.reload();
+    })
+    .catch(() => {
+      alert("Error al enviar. Inténtalo de nuevo.");
+      btnC.disabled = btnN.disabled = false;
+      btnC.textContent = "Confirmar asistencia";
+    });
+}
 
   document.getElementById('btnConfirmar').onclick = () => enviar('SÍ');
   document.getElementById('btnNegar').onclick = () => enviar('NEGADO');
