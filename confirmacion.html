@@ -104,7 +104,7 @@
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzo-yQc1z2YioWyedR9ZdaJ9SBKK0JF2LiNoZapy7JaGmlnetuU5C-dkXMs5LhbQcQy/exec'; 
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbxmbdbHlly-i3ldJWsmOAmaP0c1oqckvznpGkF6qG5MNAueV1mV709hS91ftxqdnTjI/exec'; 
   let invitados = [];
   document.getElementById('checkAlergia').addEventListener('change', function(e) {
   document.getElementById('panelAlergia').style.display = e.target.checked ? 'block' : 'none';});
@@ -191,16 +191,20 @@
     alergiaDetalle: detalleAlergia // Nueva variable
   });
 
-  fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
-    .then(() => {
-      alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
-      location.reload();
-    })
-    .catch(() => {
-      alert("Error al enviar. Inténtalo de nuevo.");
-      btnC.disabled = btnN.disabled = false;
-      btnC.textContent = "Confirmar asistencia";
-    });
+  fetch(scriptURL + '?' + params.toString(), { 
+    method: 'POST',
+    mode: 'no-cors' // Esto evita errores de redirección de Google
+  })
+  .then(() => {
+    alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
+    location.reload();
+  })
+  .catch((err) => {
+    console.error(err);
+    alert("Error al enviar. Inténtalo de nuevo.");
+    btnC.disabled = btnN.disabled = false;
+    btnC.textContent = "Confirmar asistencia";
+  });
 }
 
   document.getElementById('btnConfirmar').onclick = () => enviar('SÍ');
