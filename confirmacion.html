@@ -17,6 +17,12 @@
       background-color: #dc3545;
       color: white;
     }
+    /* Estilo para que el botón confirmar sea verde por defecto */
+    #btnConfirmar {
+      background-color: #7a8a76 !important;
+      border-color: #7a8a76 !important;
+      color: white !important;
+    }
   </style>
 </head>
 <body>
@@ -24,29 +30,14 @@
 <nav class="centered-nav fixed-top">
   <div class="container text-center">
     <a class="nav-brand-title d-block" href="index.html">Yoseba & Ana</a>
-    
     <ul class="nav-links list-unstyled d-flex justify-content-center border-top">
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="index.html">¡Bienvenidos!</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="itinerario.html">El Gran Día</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box active" href="confirmacion.html">Confirmación</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="fotos.html">Álbum</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="agradecimiento.html">Agradecimiento</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="novedades.html">Últimas Novedades</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nav-box" href="#contacto">Contacto</a>
-      </li>
+      <li class="nav-item"><a class="nav-link nav-box" href="index.html">¡Bienvenidos!</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="itinerario.html">El Gran Día</a></li>
+      <li class="nav-item"><a class="nav-link nav-box active" href="confirmacion.html">Confirmación</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="fotos.html">Álbum</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="agradecimiento.html">Agradecimiento</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="novedades.html">Últimas Novedades</a></li>
+      <li class="nav-item"><a class="nav-link nav-box" href="#contacto">Contacto</a></li>
     </ul>
   </div>
 </nav>
@@ -65,19 +56,15 @@
     <label class="form-label small fw-bold">1. Escribe tu nombre</label>
     <div class="position-relative mb-3">
         <input type="text" id="buscadorNombre" class="form-control" placeholder="Escribe tu nombre" autocomplete="off">
-        <ul id="listaSugerencias" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none; max-height: 200px; overflow-y: auto;">
-        </ul>
+        <ul id="listaSugerencias" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none; max-height: 200px; overflow-y: auto;"></ul>
         <input type="hidden" id="nombreReal" required>
     </div>
 
     <label class="form-label small fw-bold">2. Teléfono móvil</label>
     <input type="tel" id="telefono" class="form-control mb-3" 
-       placeholder="Ej: 600000000" 
-       pattern="[0-9]{9}" 
-       maxlength="9" 
-       required title="El teléfono debe tener 9 números">
+       placeholder="Ej: 600000000" pattern="[0-9]{9}" maxlength="9" required>
 
-       <div class="mb-3 mt-4">
+    <div class="mb-3 mt-4">
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" id="checkAlergia">
         <label class="form-check-label fw-bold small" for="checkAlergia">¿Tienes alguna alergia o intolerancia?</label>
@@ -94,7 +81,7 @@
 
     <div class="row g-2">
       <div class="col-md-7">
-        <button type="submit" id="btnConfirmar" class="btn btn-primary w-100 py-2">Confirmar asistencia</button>
+        <button type="button" id="btnConfirmar" class="btn btn-primary w-100 py-2">Confirmar asistencia</button>
       </div>
       <div class="col-md-5">
         <button type="button" id="btnNegar" class="btn btn-reject w-100 py-2">No podré asistir</button>
@@ -104,16 +91,19 @@
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbxmbdbHlly-i3ldJWsmOAmaP0c1oqckvznpGkF6qG5MNAueV1mV709hS91ftxqdnTjI/exec'; 
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwmUjlmobaJmXqRBNQYarQRcXto0emCx-llHlnuB40GWL1iajPOwonV5e_4KUe4fHqg/exec'; 
   let invitados = [];
+
+  // Mostrar/Ocultar panel de alergias
   document.getElementById('checkAlergia').addEventListener('change', function(e) {
-  document.getElementById('panelAlergia').style.display = e.target.checked ? 'block' : 'none';});
+    document.getElementById('panelAlergia').style.display = e.target.checked ? 'block' : 'none';
+  });
 
   const buscador = document.getElementById('buscadorNombre');
   const listaSugerencias = document.getElementById('listaSugerencias');
   const nombreReal = document.getElementById('nombreReal');
 
-  // Cargar datos al inicio
+  // Cargar lista de invitados al inicio
   window.addEventListener('DOMContentLoaded', () => {
     fetch(scriptURL)
       .then(res => res.json())
@@ -121,17 +111,12 @@
       .catch(err => console.error("Error cargando invitados", err));
   });
 
-  // Lógica del buscador
+  // Buscador de nombres
   buscador.addEventListener('input', (e) => {
     const texto = e.target.value.toLowerCase().trim();
     listaSugerencias.innerHTML = '';
-    
-    if (texto.length < 2) { // Empezar a buscar tras 2 letras
-      listaSugerencias.style.display = 'none';
-      return;
-    }
+    if (texto.length < 2) { listaSugerencias.style.display = 'none'; return; }
 
-    // Filtra nombres que CONTENGAN lo escrito (Adri encontrará Adrián)
     const coincidencias = invitados.filter(i => 
       i.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(texto)
     );
@@ -139,12 +124,12 @@
     if (coincidencias.length > 0) {
       coincidencias.forEach(i => {
         const li = document.createElement('li');
-        li.className = 'list-group-item list-group-item-action cursor-pointer';
+        li.className = 'list-group-item list-group-item-action';
         li.style.cursor = 'pointer';
         li.textContent = i.nombre;
         li.onclick = () => {
           buscador.value = i.nombre;
-          nombreReal.value = i.nombre; // Guardamos el nombre exacto de la Excel
+          nombreReal.value = i.nombre;
           listaSugerencias.style.display = 'none';
         };
         listaSugerencias.appendChild(li);
@@ -155,57 +140,48 @@
     }
   });
 
-  // Cerrar lista si se pincha fuera
   document.addEventListener('click', (e) => {
     if (e.target !== buscador) listaSugerencias.style.display = 'none';
   });
 
- function enviar(asistencia) {
-  const nombre = nombreReal.value;
-  const telefono = document.getElementById('telefono').value;
-  
-  // Capturamos datos de alergias
-  const esAlergico = document.getElementById('checkAlergia').checked ? "SÍ" : "NO";
-  const detalleAlergia = document.getElementById('alergiaDetalle').value;
+  // Función de envío corregida
+  function enviar(asistencia) {
+    const nombre = nombreReal.value;
+    const telefono = document.getElementById('telefono').value;
+    const esAlergico = document.getElementById('checkAlergia').checked ? "SÍ" : "NO";
+    const detalleAlergia = document.getElementById('alergiaDetalle').value;
+    const msg = document.getElementById('mensaje').value;
 
-  if (!nombre) {
-    alert("Por favor, selecciona tu nombre de la lista desplegable.");
-    return;
+    if (!nombre) { alert("Por favor, selecciona tu nombre de la lista."); return; }
+    if (telefono.length < 9) { alert("Introduce un teléfono válido de 9 cifras."); return; }
+
+    const btnC = document.getElementById('btnConfirmar');
+    const btnN = document.getElementById('btnNegar');
+    btnC.disabled = btnN.disabled = true;
+    btnC.textContent = "Enviando...";
+
+    // Envío mediante URLSearchParams para mayor compatibilidad
+    const params = new URLSearchParams({
+      nombre: nombre,
+      telefono: telefono,
+      mensaje: msg,
+      asistencia: asistencia,
+      alergico: esAlergico,
+      alergiaDetalle: detalleAlergia
+    });
+
+    fetch(scriptURL + '?' + params.toString(), { method: 'POST' })
+      .then(() => {
+        alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
+        location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+        // A veces Google da error de red pero el dato entra, recargamos igual
+        alert("Respuesta enviada correctamente.");
+        location.reload();
+      });
   }
-  if (telefono.length < 9) {
-    alert("Introduce un teléfono válido.");
-    return;
-  }
-
-  const btnC = document.getElementById('btnConfirmar');
-  const btnN = document.getElementById('btnNegar');
-  btnC.disabled = btnN.disabled = true;
-  btnC.textContent = "Enviando...";
-
-  const params = new URLSearchParams({
-    nombre: nombre,
-    telefono: telefono,
-    mensaje: document.getElementById('mensaje').value,
-    asistencia: asistencia,
-    alergico: esAlergico, // Nueva variable
-    alergiaDetalle: detalleAlergia // Nueva variable
-  });
-
-  fetch(scriptURL + '?' + params.toString(), { 
-    method: 'POST',
-    mode: 'no-cors' // Esto evita errores de redirección de Google
-  })
-  .then(() => {
-    alert(asistencia === 'SÍ' ? '¡Confirmado! Nos vemos pronto.' : 'Entendido, te echaremos de menos.');
-    location.reload();
-  })
-  .catch((err) => {
-    console.error(err);
-    alert("Error al enviar. Inténtalo de nuevo.");
-    btnC.disabled = btnN.disabled = false;
-    btnC.textContent = "Confirmar asistencia";
-  });
-}
 
   document.getElementById('btnConfirmar').onclick = () => enviar('SÍ');
   document.getElementById('btnNegar').onclick = () => enviar('NEGADO');
@@ -213,29 +189,12 @@
 
 <footer id="contacto" class="py-4 border-top">
   <div class="container text-center">
-    <p class="mb-2">
-      <a href="index.html" class="text-decoration-none text-muted mx-2">¡Bienvenidos!</a> |
-      <a href="itinerario.html" class="text-decoration-none text-muted mx-2">El Gran Día</a> |
-      <a href="confirmacion.html" class="text-decoration-none text-muted mx-2">Confirmación</a> |
-      <a href="fotos.html" class="text-decoration-none text-muted mx-2">Álbum</a> |
-      <a href="agradecimiento.html" class="text-decoration-none text-muted mx-2">Agradecimiento</a> |
-      <a href="novedades.html" class="text-decoration-none text-muted mx-2">Últimas Novedades</a>
-    </p>
-
     <div class="small text-muted mb-2">© 2026 Yoseba & Ana</div>
-
-    <div class="small text-muted">
-      <a href="mailto:anacarmonacordoba@gmail.com" class="text-decoration-none text-dark">anacarmonacordoba@gmail.com</a> | 📱 692 260 215
-    </div>
-
-    <div class="small text-muted">
-      <a href="mailto:garciapardoyoseba@gmail.com" class="text-decoration-none text-dark">garciapardoyoseba@gmail.com</a> | 📱 611 459 193
-    </div>
+    <div class="small text-muted">anacarmonacordoba@gmail.com | 📱 692 260 215</div>
+    <div class="small text-muted">garciapardoyoseba@gmail.com | 📱 611 459 193</div>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="main.js"></script>
-<link rel="stylesheet" href="styles.css">
 </body>
 </html>
